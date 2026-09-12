@@ -6,5 +6,6 @@ return {
 	ac = "",
 	adm = "",
 	err = "",
+	shop = "",
 	who = "bs logs",
 }

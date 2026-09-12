@@ -1,8 +1,9 @@
 # roblox-bs
 
 A drop in pack of server side systems for Roblox games. Anti cheat, admin commands with a built in
-panel, join cards, chat welcomer, rank tags, Discord webhook logs, data saving with session locks,
-remote rate limits, afk tracking and soft shutdown.
+panel, a shop for cash items, gamepasses and dev products, join cards, chat welcomer, rank tags,
+Discord webhook logs, data saving with session locks, remote rate limits, afk tracking and soft
+shutdown.
 
 Free to use in any project, paid or not. No credit needed, keep the header line if you want.
 Written in Luau for the current engine APIs (TextChatService, attributes, `BanAsync`, `PivotTo`).
@@ -30,12 +31,14 @@ By hand, copy each folder to the place in the table. `.server.lua` files are Scr
 | `ranks/server` | ServerScriptService | `Ranks` |
 | `anticheat/server` | ServerScriptService | `Ac` |
 | `admin/server` | ServerScriptService | `Adm` |
+| `shop/server` | ServerScriptService | `Shop` |
 | `greeter/server` | ServerScriptService | `Greet` |
 | `welcomer/server` | ServerScriptService | `Say` |
 | `afk/server` | ServerScriptService | `Afk` |
 | `shut/server` | ServerScriptService | `Soft` |
 | `anticheat/client` | StarterPlayerScripts | `AcWatch` |
 | `admin/client` | StarterPlayerScripts | `Panel` |
+| `shop/client` | StarterPlayerScripts | `ShopUi` |
 | `greeter/client` | StarterPlayerScripts | `GreetUi` |
 | `welcomer/client` | StarterPlayerScripts | `SayUi` |
 | `tags/client` | StarterPlayerScripts | `Tags` |
@@ -48,7 +51,9 @@ The names matter, scripts look each other up by them.
 1. Put your user id in `ranks/server/List.lua` under `owner`. The game creator is owner already.
 2. Turn on Studio access to API services if you want saves and bans to work.
 3. Turn on HTTP requests and paste your webhook links into `hooks/server/Keys.lua`.
-4. Join and press `;` to open the panel, or type `;cmds` in chat.
+4. Put your gamepass and dev product ids into `shop/server/List.lua`, anything left at `0` is hidden
+   and the server says so on start.
+5. Join and press `;` to open the panel or `F` for the shop, or type `;cmds` in chat.
 
 ## ranks
 
@@ -70,7 +75,7 @@ print(Rank.of(plr), Rank.lvl(plr), Rank.hue(plr))
 
 ## admin
 
-Prefix is `;` (set in `shared/Cfg.lua`). Commands run from chat or from the panel. Panel opens with
+42 commands. Prefix is `;` (set in `shared/Cfg.lua`). Commands run from chat or from the panel. Panel opens with
 `;`, or the small button on phones. It has a player list, quick buttons, the command box with history
 on the up arrow and name completion, and a log that also shows anti cheat flags live.
 
@@ -85,6 +90,7 @@ Times are `30s`, `10m`, `2h`, `7d`, `perm`.
 ;freeze ;thaw ;sit ;stun ;unstun ;fling bob 120               ;invis ;vis
 ;respawn bob                     ;give bob sword              ;cash bob 500
 ;announce server wipe in 5       ;hint hold still              ;time 3
+;grant bob boots                 ;owns bob                     ;rank bob mod
 ;clean                           ;here ;ping ;up ;ver ;find bob
 ;bypass bob                      ;boot
 ```
@@ -129,6 +135,39 @@ end
 
 Out of range calls raise a flag by themselves, so you do not need to log anything.
 
+## shop
+
+Three kinds of thing to sell, all in `shop/server/List.lua`:
+
+- cash items, paid with the `cash` field on the save, one time or repeatable
+- gamepasses, one off robux
+- dev products, repeatable robux
+
+What each one actually does lives in `shop/server/Gift.lua`, one short function per key. The ones in
+there now give speed, jump, health, a heal, a vip bundle, a light and a revive. Perks set the same
+attributes the anti cheat reads, so a speed item will never flag the player who bought it.
+
+The menu opens with `F` or the button in the corner, three tabs, live cash in the header, owned
+items marked. The client never sends a price, it sends the item key and the server looks the cost up.
+
+```lua
+local Buy = require(ServerScriptService.Shop.Buy)
+
+Buy.award(plr, 250)            -- adds cash, doubled for vip
+Buy.owns(plr, "boots")         -- how many they bought
+Buy.pass(plr, "vip")           -- gamepass check, cached
+```
+
+Receipts are handled the way Roblox wants: the purchase id is written into the save and the save has
+to come back before the receipt is granted, so a failed write means Roblox asks again instead of the
+player paying for nothing. Old purchase ids get pruned. Unknown product ids are never swallowed.
+Only one script in the game may set `ProcessReceipt`, this is that script.
+
+Gamepass ownership is cached per player so the shop does not hammer the API, and the cache updates
+the moment a prompt finishes. Perks that touch the character are reapplied on every respawn.
+
+`;grant bob boots` hands an item over for free, `;owns bob` lists what someone has.
+
 ## webhooks
 
 Links live in `hooks/server/Keys.lua`, server only, never in `shared`. Four lanes: `main`, `ac`,
@@ -153,7 +192,8 @@ Hook.text("main", "short line")
 ```
 
 Out of the box you get server start, joins with visits and playtime, leaves, every command, every
-anti cheat flag, bans, and script errors (deduped and throttled so one broken loop cannot spam).
+anti cheat flag, bans, every shop and robux purchase, and script errors (deduped and throttled so
+one broken loop cannot spam).
 
 ## saving
 
@@ -225,6 +265,7 @@ runtime. Server only lists are kept out of it on purpose:
 - Scripts handle players who were already in the server, so hot reloading in Studio works.
 - Connections are cleaned up through `shared/Bin.lua` on respawn and on leave.
 - Anything that yields rechecks `plr.Parent` before touching the player again.
+- `shared/Mk.lua` builds the GUIs for both panels, so they share one palette.
 - `default.project.json` and `rokit.toml` are there for Rojo, delete them if you install by hand.
 
 Questions or bugs, poke @mcs.s on discord.

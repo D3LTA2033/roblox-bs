@@ -91,7 +91,16 @@ Cfg.data = {
 		made = 0,
 		seen = 0,
 		cash = 0,
+		owns = {},
+		got = {},
 	},
+}
+
+Cfg.shop = {
+	on = true,
+	key = Enum.KeyCode.F,
+	name = "shop",
+	keep = 60,
 }
 
 Cfg.afk = {

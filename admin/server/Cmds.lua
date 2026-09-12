@@ -645,6 +645,46 @@ add({
 })
 
 add({
+	name = "grant",
+	need = "admin",
+	use = ";grant <who> <item>",
+	run = function(ctx, bits)
+		local Buy = require(SSS:WaitForChild("Shop"):WaitForChild("Buy"))
+		local pile = Args.plrs(ctx, bits[1])
+		local key = string.lower(bits[2] or "")
+		for _, plr in pile do
+			local _, line = Buy.free(plr, key)
+			ctx.out(line)
+		end
+		return nil
+	end,
+})
+
+add({
+	name = "owns",
+	need = "mod",
+	use = ";owns <who>",
+	run = function(ctx, bits)
+		local plr = Args.plr(ctx, bits[1])
+		if not plr then
+			return "nobody like " .. tostring(bits[1])
+		end
+		local d = Store.get(plr)
+		if not d or type(d.owns) ~= "table" then
+			return plr.Name .. " has nothing saved yet"
+		end
+		local pile = {}
+		for key, n in d.owns do
+			table.insert(pile, string.format("%s x%d", key, n))
+		end
+		if #pile == 0 then
+			return plr.Name .. " owns nothing"
+		end
+		return plr.Name .. ": " .. table.concat(pile, ", ")
+	end,
+})
+
+add({
 	name = "rank",
 	need = "owner",
 	use = ";rank <who> <tier>",

@@ -9,8 +9,8 @@ local Bits = RepS:WaitForChild("Bits")
 local Cfg = require(Bits:WaitForChild("Cfg"))
 local Fmt = require(Bits:WaitForChild("Fmt"))
 local Net = require(Bits:WaitForChild("Net"))
+local Mk = require(Bits:WaitForChild("Mk"))
 local Rank = require(Bits:WaitForChild("Rank"))
-local Mk = require(script.Parent.Mk)
 
 local me = Players.LocalPlayer
 local wire = Net.ev("adm")

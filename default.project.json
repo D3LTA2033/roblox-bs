@@ -16,6 +16,7 @@
       "Adm": { "$path": "admin/server" },
       "Greet": { "$path": "greeter/server" },
       "Say": { "$path": "welcomer/server" },
+      "Shop": { "$path": "shop/server" },
       "Afk": { "$path": "afk/server" },
       "Soft": { "$path": "shut/server" }
     },
@@ -27,6 +28,7 @@
         "Panel": { "$path": "admin/client" },
         "GreetUi": { "$path": "greeter/client" },
         "SayUi": { "$path": "welcomer/client" },
+        "ShopUi": { "$path": "shop/client" },
         "Tags": { "$path": "tags/client" },
         "AfkUi": { "$path": "afk/client" }
       }
