@@ -1,0 +1,35 @@
+{
+  "name": "roblox-bs",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Bits": { "$path": "shared" }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Gate": { "$path": "guard/server" },
+      "Hooks": { "$path": "hooks/server" },
+      "Data": { "$path": "data/server" },
+      "Ranks": { "$path": "ranks/server" },
+      "Ac": { "$path": "anticheat/server" },
+      "Adm": { "$path": "admin/server" },
+      "Greet": { "$path": "greeter/server" },
+      "Say": { "$path": "welcomer/server" },
+      "Afk": { "$path": "afk/server" },
+      "Soft": { "$path": "shut/server" }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "AcWatch": { "$path": "anticheat/client" },
+        "Panel": { "$path": "admin/client" },
+        "GreetUi": { "$path": "greeter/client" },
+        "SayUi": { "$path": "welcomer/client" },
+        "Tags": { "$path": "tags/client" },
+        "AfkUi": { "$path": "afk/client" }
+      }
+    }
+  }
+}
